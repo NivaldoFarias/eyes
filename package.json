@@ -1,0 +1,45 @@
+{
+	"name": "eyes",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"author": {
+		"name": "Nivaldo Farias",
+		"url": "https://github.com/NivaldoFarias"
+	},
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"lint": "eslint .",
+		"format": "prettier --write '**/*.{ts,js,cjs,mjs,json,html}'",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.13.0",
+		"@total-typescript/ts-reset": "0.6.1",
+		"@types/eslint__js": "^8.42.3",
+		"@types/node": "22.8.2",
+		"@types/react": "^18.3.12",
+		"@types/react-dom": "^18.3.1",
+		"@vitejs/plugin-react": "^4.3.3",
+		"autoprefixer": "^10.4.20",
+		"eslint": "^9.13.0",
+		"eslint-plugin-react": "^7.37.2",
+		"eslint-config-prettier": "^9.0.0",
+		"eslint-plugin-prettier": "^5.0.0",
+		"eslint-plugin-react-hooks": "^5.0.0",
+		"eslint-plugin-react-refresh": "^0.4.14",
+		"globals": "^15.2.0",
+		"prettier": "^3.0.3",
+		"postcss": "^8.4.47",
+		"tailwindcss": "^3.4.14",
+		"vite": "^5.4.10",
+		"type-fest": "^4.6.0",
+		"typescript": "^5.4.5",
+		"typescript-eslint": "8.12.2"
+	}
+}

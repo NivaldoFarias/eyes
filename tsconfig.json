@@ -1,0 +1,42 @@
+{
+    "compilerOptions": {
+        /* Language Compilation Options */
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "lib": ["DOM", "DOM.Iterable", "ESNext"],
+        "isolatedModules": true,
+        "resolveJsonModule": true,
+        "allowJs": true,
+        "checkJs": true,
+
+        /* Modules */
+        "baseUrl": "./",
+
+        /* Type Checking Rules */
+        "strict": true,
+        "strictNullChecks": true,
+        "noUnusedLocals": true,
+        "noImplicitOverride": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedIndexedAccess": true,
+        "allowArbitraryExtensions": true,
+
+        /* Language and Environment */
+        "jsx": "preserve",
+
+        /* Interop Constraints */
+        "esModuleInterop": true,
+
+        /* Projects */
+        "incremental": true,
+
+        /* Other Options */
+        "skipLibCheck": true,
+
+        /* Output Directory */
+        "outDir": "./dist"
+    },
+    "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+    "exclude": ["node_modules", "dist"]
+}
