@@ -4,9 +4,12 @@ import useCursorCoordinates from "./hooks/useCursorCoordinates";
 function App() {
 	const cursorCoordinates = useCursorCoordinates(true);
 
+	const nOfEyesToScreenWidth =
+		Math.round(window.innerWidth / 5) > 224 ? 224 : Math.round(window.innerWidth / 5);
+
 	return (
-		<div className="min-w-screen grid min-h-screen grid-flow-col grid-rows-6 gap-36 bg-black px-12 py-7">
-			{new Array(42).fill(0).map((_, index) => (
+		<div className="min-w-screen sm:grid-rows-16 grid min-h-screen gap-y-10 overflow-hidden bg-black pt-4 max-sm:-ml-6 max-sm:grid-flow-row max-sm:grid-cols-4 min-[410px]:max-sm:grid-cols-5 sm:grid-flow-col lg:gap-x-2">
+			{new Array(nOfEyesToScreenWidth).fill(null).map((_, index) => (
 				<Eyes
 					key={index}
 					eyeballRadius={24}

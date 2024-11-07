@@ -9,16 +9,6 @@ const useCursorCoordinates = (includeTouch = false) => {
 	const [cursorCoordinates, setCursorCoordinates] = useState<CursorCoordinates>({ x: 0, y: 0 });
 
 	useEffect(() => {
-		const updateCursorCoordinates = (event: MouseEvent | TouchEvent) => {
-			if (event instanceof MouseEvent) {
-				setCursorCoordinates({ x: event.clientX, y: event.clientY });
-			} else if (event instanceof TouchEvent) {
-				const touch = event.touches[0];
-
-				if (touch) setCursorCoordinates({ x: touch.clientX, y: touch.clientY });
-			}
-		};
-
 		window.addEventListener("mousemove", updateCursorCoordinates);
 
 		if (includeTouch) window.addEventListener("touchmove", updateCursorCoordinates);
@@ -31,6 +21,16 @@ const useCursorCoordinates = (includeTouch = false) => {
 	}, [cursorCoordinates]);
 
 	return cursorCoordinates;
+
+	function updateCursorCoordinates(event: MouseEvent | TouchEvent) {
+		if (event instanceof MouseEvent) {
+			setCursorCoordinates({ x: event.clientX, y: event.clientY });
+		} else if (event instanceof TouchEvent) {
+			const touch = event.touches[0];
+
+			if (touch) setCursorCoordinates({ x: touch.clientX, y: touch.clientY });
+		}
+	}
 };
 
 export default useCursorCoordinates;

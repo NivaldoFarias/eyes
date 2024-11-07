@@ -2,46 +2,40 @@ import { useRef } from "react";
 
 import type { CursorCoordinates } from "src/hooks/useCursorCoordinates";
 
-/**
- * - The eye has its center is at {x:-24,y:-24}.
- * - The eyeball is 48px in diameter.
- * - The eyeball's movement is limited to a square of 100px.
- * - The eyeball moves within that range in a ratio to the distance from the cursor.
- * - The eyeball never crosses the border of that rectangle.
- * - The eyeball's movement is limited to two times the eyeball's radius.
- * - The number of pixels the eyeball moves is the distance from the cursor times
- * the computed ratio.
- * - The cursor has a bounding rectangle equal to the window's width and height.
- * - The cursor's position is updated on mousemove.
- * - Each eyeball has a bounding rectangle equal to the eye's width and height, a square of 100px.
- * - Thus, if the cursor moves X pixels in the X-axis, the eyeball moves (X * ratio) pixels
- * in the X-axis. The same applies to the Y-axis.
- */
 export default function RenderEyeEffect({
 	cursorCoordinates,
-	eyeballRadius = 24,
+	eyeballRadius,
 }: {
 	cursorCoordinates: CursorCoordinates;
-	eyeballRadius?: number;
+	eyeballRadius: number;
 }) {
 	const eyeRef = useRef<HTMLDivElement>(null);
-
-	const values = getEyeballPosition();
 
 	return (
 		<div className="relative isolate flex rotate-90 items-center justify-center invert">
 			<div
-				className={`absolute h-[${eyeballRadius * 5}px] w-[${eyeballRadius * 5}px] translate-x-10 rounded-full bg-white mix-blend-exclusion`}
+				className="absolute translate-x-10 rounded-full bg-white mix-blend-exclusion"
+				style={{
+					height: `${eyeballRadius * 5}px`,
+					width: `${eyeballRadius * 5}px`,
+				}}
 			></div>
 			<div
-				className={`absolute h-[${eyeballRadius * 5}px] w-[${eyeballRadius * 5}px] -translate-x-10 rounded-full bg-white mix-blend-exclusion`}
+				className="absolute -translate-x-10 rounded-full bg-white mix-blend-exclusion"
+				style={{
+					height: `${eyeballRadius * 5}px`,
+					width: `${eyeballRadius * 5}px`,
+				}}
 			></div>
 			<div
-				className={`absolute h-[${eyeballRadius * 2}px] w-[${eyeballRadius * 2}px] rounded-full bg-white`}
-				style={values}
+				className="absolute rounded-full bg-white"
+				style={{
+					...getEyeballPosition(),
+					height: `${eyeballRadius * 2}px`,
+					width: `${eyeballRadius * 2}px`,
+				}}
 				ref={eyeRef}
 			></div>
-			{/* <div className="absolute h-[100px] w-[100px] rounded-full border-2 border-solid border-cyan-500"></div> */}
 		</div>
 	);
 
@@ -67,6 +61,32 @@ export default function RenderEyeEffect({
 			top: -Math.round(distanceRatio.x) - eyeballRadius,
 			left: Math.round(distanceRatio.y) - eyeballRadius,
 		};
-		return values;
+
+		// const withinBounds = {
+		// 	top:
+		// 		values.top > 0 ? Math.max(values.top, -eyeballRadius) : Math.min(values.top, eyeballRadius),
+		// 	left:
+		// 		values.left > 0
+		// 			? Math.max(values.left, -eyeballRadius)
+		// 			: Math.min(values.left, eyeballRadius),
+		// };
+
+		const boundaries = {
+			top: -(eyeballRadius * 2),
+			left: -(eyeballRadius * 2),
+			bottom: 0,
+			right: 0,
+		};
+
+		return {
+			top:
+				values.top < 0
+					? Math.max(values.top, boundaries.top)
+					: Math.min(values.top, boundaries.bottom),
+			left:
+				values.left < 0
+					? Math.max(values.left, boundaries.left)
+					: Math.min(values.left, boundaries.right),
+		};
 	}
 }
