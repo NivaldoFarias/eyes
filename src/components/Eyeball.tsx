@@ -11,6 +11,8 @@ export default function RenderEyeEffect({
 }) {
 	const eyeRef = useRef<HTMLDivElement>(null);
 
+	const eyeballData = computeEyeballCoordinates();
+
 	return (
 		<div className="relative isolate flex rotate-90 items-center justify-center invert">
 			<div
@@ -30,7 +32,7 @@ export default function RenderEyeEffect({
 			<div
 				className="absolute rounded-full bg-white"
 				style={{
-					...getEyeballPosition(),
+					...eyeballData.coordinates,
 					height: `${eyeballRadius * 2}px`,
 					width: `${eyeballRadius * 2}px`,
 				}}
@@ -39,12 +41,14 @@ export default function RenderEyeEffect({
 		</div>
 	);
 
-	function getEyeballPosition() {
+	function computeEyeballCoordinates() {
 		const eyeRect = eyeRef.current?.getBoundingClientRect();
 
+		if (!eyeRect) return { top: 0, left: 0 };
+
 		const eyeCenter = {
-			x: eyeRect ? eyeRect.left + eyeRect.width / 2 : 0,
-			y: eyeRect ? eyeRect.top + eyeRect.height / 2 : 0,
+			x: eyeRect.left + eyeRect.width / 2,
+			y: eyeRect.top + eyeRect.height / 2,
 		};
 
 		const cursorDistanceFromEyeCenter = {
@@ -53,23 +57,14 @@ export default function RenderEyeEffect({
 		};
 
 		const distanceRatio = {
-			x: cursorDistanceFromEyeCenter.x / (eyeRect ? eyeRect.width : 1),
-			y: cursorDistanceFromEyeCenter.y / (eyeRect ? eyeRect.height : 1),
+			x: cursorDistanceFromEyeCenter.x / eyeRect.width,
+			y: cursorDistanceFromEyeCenter.y / eyeRect.height,
 		};
 
-		const values = {
+		const eyeballOffset = {
 			top: -Math.round(distanceRatio.x) - eyeballRadius,
 			left: Math.round(distanceRatio.y) - eyeballRadius,
 		};
-
-		// const withinBounds = {
-		// 	top:
-		// 		values.top > 0 ? Math.max(values.top, -eyeballRadius) : Math.min(values.top, eyeballRadius),
-		// 	left:
-		// 		values.left > 0
-		// 			? Math.max(values.left, -eyeballRadius)
-		// 			: Math.min(values.left, eyeballRadius),
-		// };
 
 		const boundaries = {
 			top: -(eyeballRadius * 2),
@@ -78,15 +73,21 @@ export default function RenderEyeEffect({
 			right: 0,
 		};
 
-		return {
+		const coordinates = {
 			top:
-				values.top < 0
-					? Math.max(values.top, boundaries.top)
-					: Math.min(values.top, boundaries.bottom),
+				eyeballOffset.top < 0
+					? Math.max(eyeballOffset.top, boundaries.top)
+					: Math.min(eyeballOffset.top, boundaries.bottom),
 			left:
-				values.left < 0
-					? Math.max(values.left, boundaries.left)
-					: Math.min(values.left, boundaries.right),
+				eyeballOffset.left < 0
+					? Math.max(eyeballOffset.left, boundaries.left)
+					: Math.min(eyeballOffset.left, boundaries.right),
+		};
+
+		return {
+			coordinates,
+			distanceRatio,
+			cursorDistanceFromEyeCenter,
 		};
 	}
 }
