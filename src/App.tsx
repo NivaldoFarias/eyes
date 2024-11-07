@@ -24,8 +24,13 @@ function App() {
 
 	return (
 		<div className="min-w-screen flex min-h-screen flex-col justify-between bg-black">
-			<div className="flex h-96 w-full items-center justify-center">
-				<Eyes cursorCoordinates={cursorCoordinates} />
+			<div className="grid h-full w-full grid-flow-col grid-rows-4 gap-36 px-12 py-7">
+				{new Array(20).fill(0).map((_, index) => (
+					<Eyes
+						key={index}
+						cursorCoordinates={cursorCoordinates}
+					/>
+				))}
 			</div>
 			<h1 className="w-fit border-2 border-solid border-yellow-300 px-2 text-right text-xl text-yellow-400">
 				x: {cursorCoordinates.x} y: {cursorCoordinates.y}

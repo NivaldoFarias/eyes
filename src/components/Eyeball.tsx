@@ -12,11 +12,6 @@ const STATIC = {
 	},
 };
 
-const viewportToEyeballRatio = {
-	height: window.innerHeight / STATIC.eyeball.boundingRect.height,
-	width: window.innerWidth / STATIC.eyeball.boundingRect.width,
-};
-
 /**
  * - The eye has its center is at {x:-24,y:-24}.
  * - The eyeball is 48px in diameter.
@@ -37,34 +32,44 @@ export default function RenderEyeEffect({
 }: {
 	cursorCoordinates: CursorCoordinates;
 }) {
-	const [eyeballPosition, setPosition] = useState({
+	const [eyeballCoordinates, setEyeballCoordinates] = useState({
 		x: -STATIC.eyeball.radius,
 		y: -STATIC.eyeball.radius,
 	});
 	const eyeRef = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
-		if (!eyeRef.current) return;
+	const eyeRect = eyeRef.current?.getBoundingClientRect();
 
-		const eyeRect = eyeRef.current.getBoundingClientRect();
-		const eyeCenter = {
-			x: eyeRect.left + eyeRect.width / 2,
-			y: eyeRect.top + eyeRect.height / 2,
-		};
+	const eyeCenter = {
+		x: eyeRect ? eyeRect.left + eyeRect.width / 2 : 0,
+		y: eyeRect ? eyeRect.top + eyeRect.height / 2 : 0,
+	};
 
-		return () => {};
-	}, [cursorCoordinates]);
+	const cursorDistanceFromEyeCenter = {
+		x: cursorCoordinates.x - eyeCenter.x,
+		y: cursorCoordinates.y - eyeCenter.y,
+	};
+
+	const distanceRatio = {
+		x: cursorDistanceFromEyeCenter.x / (eyeRect ? eyeRect.width : 1),
+		y: cursorDistanceFromEyeCenter.y / (eyeRect ? eyeRect.height : 1),
+	};
+
+	const values = {
+		top: -Math.round(distanceRatio.x) - STATIC.eyeball.radius,
+		left: Math.round(distanceRatio.y) - STATIC.eyeball.radius,
+	};
 
 	return (
-		<div className="relative isolate flex rotate-90 scale-150 items-center justify-center invert">
+		<div className="relative isolate flex rotate-90 items-center justify-center invert">
 			<div className="absolute h-32 w-32 translate-x-10 rounded-full bg-white mix-blend-exclusion"></div>
 			<div className="absolute h-32 w-32 -translate-x-10 rounded-full bg-white mix-blend-exclusion"></div>
 			<div
-				className={`absolute border-2 border-solid border-red-500 h-[${STATIC.eyeball.radius * 2}px] w-[${STATIC.eyeball.radius * 2}px] rounded-full bg-white`}
-				style={{ top: eyeballPosition.x, left: eyeballPosition.y }}
+				className={`absolute h-[${STATIC.eyeball.radius * 2}px] w-[${STATIC.eyeball.radius * 2}px] rounded-full bg-white`}
+				style={values}
 				ref={eyeRef}
 			></div>
-			<div className="absolute h-[100px] w-[100px] rounded-full border-2 border-solid border-cyan-500"></div>
+			{/* <div className="absolute h-[100px] w-[100px] rounded-full border-2 border-solid border-cyan-500"></div> */}
 		</div>
 	);
 }
