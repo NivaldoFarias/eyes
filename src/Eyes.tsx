@@ -30,14 +30,14 @@ function Eyes({ mousePosition }: { mousePosition: MousePosition }) {
 				y: eyeRect.top + eyeRect.height / 2,
 			};
 
-			const angle = Math.atan2(mousePosition.y - eyeCenter.y, mousePosition.x - eyeCenter.x);
-			console.log({ angle });
+			const distanceFromMouse = {
+				x: mousePosition.x - eyeCenter.x,
+				y: mousePosition.y - eyeCenter.y,
+			};
 
-			const radius = 40;
-			const x = Math.sin(angle) * radius;
-			const y = Math.cos(angle) * radius;
+			const proportion = Math.min(1, 40 / Math.hypot(distanceFromMouse.x, distanceFromMouse.y));
 
-			setPosition({ x, y });
+			console.log(proportion);
 
 			return () => {};
 		}, [mousePosition]);
