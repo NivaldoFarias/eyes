@@ -2,17 +2,17 @@ import { useEffect, useState } from "react";
 
 import Eyes from "./Eyes";
 
-export interface MousePosition {
+export interface CursorCoordinates {
 	x: number;
 	y: number;
 }
 
 function App() {
-	const [mousePosition, setMousePosition] = useState<MousePosition>({ x: 0, y: 0 });
+	const [cursorCoordinates, setCursorCoordinates] = useState<CursorCoordinates>({ x: 0, y: 0 });
 
 	useEffect(() => {
 		const update = (event: MouseEvent) => {
-			setMousePosition({ x: event.clientX, y: event.clientY });
+			setCursorCoordinates({ x: event.clientX, y: event.clientY });
 		};
 
 		window.addEventListener("mousemove", update);
@@ -20,15 +20,15 @@ function App() {
 		return () => {
 			window.removeEventListener("mousemove", update);
 		};
-	}, [mousePosition]);
+	}, [cursorCoordinates]);
 
 	return (
 		<div className="min-w-screen flex min-h-screen flex-col justify-between bg-black">
 			<div className="flex h-96 w-full items-center justify-center">
-				<Eyes mousePosition={mousePosition} />
+				<Eyes cursorCoordinates={cursorCoordinates} />
 			</div>
-			<h1 className="text-right text-xl text-yellow-400">
-				x: {mousePosition.x} y: {mousePosition.y}
+			<h1 className="w-fit border-2 border-solid border-yellow-300 px-2 text-right text-xl text-yellow-400">
+				x: {cursorCoordinates.x} y: {cursorCoordinates.y}
 			</h1>
 		</div>
 	);
