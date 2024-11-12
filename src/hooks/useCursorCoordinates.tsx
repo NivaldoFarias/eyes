@@ -18,7 +18,7 @@ const useCursorCoordinates = (includeTouch = false) => {
 
 			if (includeTouch) window.removeEventListener("touchmove", updateCursorCoordinates);
 		};
-	}, [cursorCoordinates]);
+	}, []);
 
 	return cursorCoordinates;
 
