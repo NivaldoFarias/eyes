@@ -1,93 +1,82 @@
-import { useRef } from "react";
+import { useCallback, useContext } from "react";
+import { CursorContext } from "../hooks/CursorContext";
 
-import type { CursorCoordinates } from "src/hooks/useCursorCoordinates";
+export default function RenderEyeEffect() {
+	const cursorCoordinates = useContext(CursorContext);
 
-export default function RenderEyeEffect({
-	cursorCoordinates,
-	eyeballRadius,
-}: {
-	cursorCoordinates: CursorCoordinates;
-	eyeballRadius: number;
-}) {
-	const eyeRef = useRef<HTMLDivElement>(null);
+	const eyeMovementRef = useCallback(
+		(node: HTMLDivElement | null) => {
+			if (!node) return;
 
-	const eyeballData = computeEyeballCoordinates();
+			const coordinates = computeValues({
+				rect: node.getBoundingClientRect(),
+				cursorCoordinates,
+			});
+
+			node.style.top = `${coordinates.top}px`;
+			node.style.left = `${coordinates.left}px`;
+		},
+		[cursorCoordinates],
+	);
 
 	return (
 		<div className="relative isolate flex rotate-90 items-center justify-center invert">
+			<div className="absolute h-[120px] w-[120px] translate-x-10 rounded-full bg-white mix-blend-exclusion"></div>
+			<div className="absolute h-[120px] w-[120px] -translate-x-10 rounded-full bg-white mix-blend-exclusion"></div>
 			<div
-				className="absolute translate-x-10 rounded-full bg-white mix-blend-exclusion"
-				style={{
-					height: `${eyeballRadius * 5}px`,
-					width: `${eyeballRadius * 5}px`,
-				}}
-			></div>
-			<div
-				className="absolute -translate-x-10 rounded-full bg-white mix-blend-exclusion"
-				style={{
-					height: `${eyeballRadius * 5}px`,
-					width: `${eyeballRadius * 5}px`,
-				}}
-			></div>
-			<div
-				className="absolute rounded-full bg-white"
-				style={{
-					...eyeballData.coordinates,
-					height: `${eyeballRadius * 2}px`,
-					width: `${eyeballRadius * 2}px`,
-				}}
-				ref={eyeRef}
+				className="absolute h-12 w-12 rounded-full bg-white"
+				ref={eyeMovementRef}
 			></div>
 		</div>
 	);
+}
 
-	function computeEyeballCoordinates() {
-		const eyeRect = eyeRef.current?.getBoundingClientRect();
+function computeValues({
+	rect,
+	cursorCoordinates,
+}: {
+	rect: DOMRect;
+	cursorCoordinates: { x: number; y: number };
+}) {
+	const EYEBALL_RADIUS = 24;
 
-		if (!eyeRect) return { top: 0, left: 0 };
+	const eyeCenter = {
+		x: rect.left + rect.width / 2,
+		y: rect.top + rect.height / 2,
+	};
 
-		const eyeCenter = {
-			x: eyeRect.left + eyeRect.width / 2,
-			y: eyeRect.top + eyeRect.height / 2,
-		};
+	const cursorDistanceFromEyeCenter = {
+		x: cursorCoordinates.x - eyeCenter.x,
+		y: cursorCoordinates.y - eyeCenter.y,
+	};
 
-		const cursorDistanceFromEyeCenter = {
-			x: cursorCoordinates.x - eyeCenter.x,
-			y: cursorCoordinates.y - eyeCenter.y,
-		};
+	const distanceRatio = {
+		x: cursorDistanceFromEyeCenter.x / rect.width,
+		y: cursorDistanceFromEyeCenter.y / rect.height,
+	};
 
-		const distanceRatio = {
-			x: cursorDistanceFromEyeCenter.x / eyeRect.width,
-			y: cursorDistanceFromEyeCenter.y / eyeRect.height,
-		};
+	const eyeballOffset = {
+		top: -Math.round(distanceRatio.x) - EYEBALL_RADIUS,
+		left: Math.round(distanceRatio.y) - EYEBALL_RADIUS,
+	};
 
-		const eyeballOffset = {
-			top: -Math.round(distanceRatio.x) - eyeballRadius,
-			left: Math.round(distanceRatio.y) - eyeballRadius,
-		};
+	const boundaries = {
+		top: -(EYEBALL_RADIUS * 2),
+		left: -(EYEBALL_RADIUS * 2),
+		bottom: 0,
+		right: 0,
+	};
 
-		const boundaries = {
-			top: -(eyeballRadius * 2),
-			left: -(eyeballRadius * 2),
-			bottom: 0,
-			right: 0,
-		};
+	const coordinates = {
+		top:
+			eyeballOffset.top < 0
+				? Math.max(eyeballOffset.top, boundaries.top)
+				: Math.min(eyeballOffset.top, boundaries.bottom),
+		left:
+			eyeballOffset.left < 0
+				? Math.max(eyeballOffset.left, boundaries.left)
+				: Math.min(eyeballOffset.left, boundaries.right),
+	};
 
-		const coordinates = {
-			top:
-				eyeballOffset.top < 0
-					? Math.max(eyeballOffset.top, boundaries.top)
-					: Math.min(eyeballOffset.top, boundaries.bottom),
-			left:
-				eyeballOffset.left < 0
-					? Math.max(eyeballOffset.left, boundaries.left)
-					: Math.min(eyeballOffset.left, boundaries.right),
-		};
-
-		return {
-			coordinates,
-			distanceRatio,
-			cursorDistanceFromEyeCenter,
-		};
-	}
+	return coordinates;
 }
